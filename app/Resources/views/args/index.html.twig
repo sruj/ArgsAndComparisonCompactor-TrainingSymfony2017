@@ -1,5 +1,16 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    {{ mama }}
+
+    <h2>Insert command:</h2>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+
+    <h2>Command:</h2>
+    {% if commandInput is not empty %}
+        {{ commandInput }}
+    {% else %}
+        {{ inputPattern }}
+    {% endif %}
 {% endblock %}
