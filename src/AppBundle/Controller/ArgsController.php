@@ -6,6 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Form\ConsoleType;
+use AppBundle\Args\Args;
 
 class ArgsController extends Controller
 {
@@ -24,6 +25,10 @@ class ArgsController extends Controller
             $command = $form->getData();
             $commandInput = $command->getCommandInput();
         }
+
+        $schema = "l,p#,d*";
+        $command = '-l true -p 234 -d Ala';
+        $args = new Args($schema, $command);
 
         return $this->render('args/index.html.twig', [
             'inputPattern' => $inputPattern,

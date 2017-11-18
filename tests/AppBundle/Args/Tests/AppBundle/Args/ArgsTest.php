@@ -8,21 +8,19 @@
 
 namespace Tests\AppBundle\Args;
 
-use AppBundle\Args;
+use AppBundle\Args\Args;
 use PHPUnit\Framework\TestCase;
 
 class ArgsTest extends TestCase
 {
-    public function testPushAndPop()
+    public function testGetValueByLetter()
     {
-        $stack = [];
-        $this->assertEquals(0, count($stack));
+        $schema = "l,p#,d*";
+        $command = '-l true -p 234 -d Ala';
+        $args = new Args($schema, $command);
 
-        array_push($stack, 'foo');
-        $this->assertEquals('foo', $stack[count($stack)-1]);
-        $this->assertEquals(1, count($stack));
-
-        $this->assertEquals('foo', array_pop($stack));
-        $this->assertEquals(0, count($stack));
+        $this->assertEquals($args->getValueByLetter('l'), 'true');
+        $this->assertEquals($args->getValueByLetter('p'), '234');
+        $this->assertEquals($args->getValueByLetter('d'), 'Ala');
     }
 }
