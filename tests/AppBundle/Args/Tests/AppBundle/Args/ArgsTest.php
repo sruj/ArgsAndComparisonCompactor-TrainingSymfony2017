@@ -19,8 +19,8 @@ class ArgsTest extends TestCase
         $command = '-l true -p 234 -d Ala';
         $args = new Args($schema, $command);
 
-        $this->assertEquals($args->getValueByLetter('l'), 'true');
-        $this->assertEquals($args->getValueByLetter('p'), '234');
-        $this->assertEquals($args->getValueByLetter('d'), 'Ala');
+        $this->assertEquals($args->getValueByLetter('l', 'bool'), true);
+        $this->assertEquals($args->getValueByLetter('p', 'intiger'), 234);
+        $this->assertEquals($args->getValueByLetter('d', 'string'), 'Ala');
     }
 }
