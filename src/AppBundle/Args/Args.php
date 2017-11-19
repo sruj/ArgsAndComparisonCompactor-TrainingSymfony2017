@@ -4,9 +4,6 @@ namespace AppBundle\Args;
 
 class Args
 {
-    private $schema;
-    private $command;
-    private $pieces;
     private $commandPieces;
     private $argumentsTypes;
 
@@ -29,16 +26,10 @@ class Args
      **/
     public function __construct($schema, $command)
     {
-        $schema = "l,p#,d*";
-        $command = '-l true -p 234 -d Ala';
-
-        $this->command = $command;
-        $this->schema = $schema;
-
         $argumentsTypes = $this->prepareArgumentsTypesArray($schema);
         $this->argumentsTypes = $argumentsTypes;
         $pieces = $this->splitCommand($command);
-        $commandPieces = $this->prepareCommandPiecesArray($pieces,$argumentsTypes);
+        $commandPieces = $this->prepareCommandPiecesArray($pieces, $argumentsTypes);
         $this->commandPieces = $commandPieces;
     }
 
@@ -49,7 +40,7 @@ class Args
         return $pieces;
     }
 
-    private function prepareCommandPiecesArray($pieces,$argumentsTypes)
+    private function prepareCommandPiecesArray($pieces, $argumentsTypes)
     {
         $commandPieces = [];
         $actualParameter = null;
@@ -61,7 +52,7 @@ class Args
                 $commandPieces[$secondLetter] = null;
                 $actualParameter = $secondLetter;
             } else {
-                $commandPieces[$actualParameter] = $this->convertStringIntoType($item,$argumentsTypes[$actualParameter] );
+                $commandPieces[$actualParameter] = $this->convertStringIntoType($item, $argumentsTypes[$actualParameter]);
                 $actualParameter = null;
             }
         }
@@ -73,7 +64,7 @@ class Args
     {
         $convertedValue = null;
 
-        switch($type){
+        switch ($type) {
             case "bool":
                 $convertedValue = $this->convertBool($stringParameter);
                 break;
@@ -89,7 +80,7 @@ class Args
 
     private function convertBool($stringParameter)
     {
-        if("true" == trim(strtolower($stringParameter))){
+        if ("true" == trim(strtolower($stringParameter))) {
             return true;
         }
         return false;
@@ -104,8 +95,6 @@ class Args
     {
         return (int)trim($stringParameter);
     }
-
-
 
     private function isCommandArgument($firstLetter, $secondLetter): bool
     {
