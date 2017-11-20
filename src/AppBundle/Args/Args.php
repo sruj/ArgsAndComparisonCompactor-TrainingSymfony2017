@@ -26,17 +26,20 @@ class Args
      **/
     public function __construct($schema, $command)
     {
-        $argumentsTypes = $this->prepareArgumentsTypesArray($schema);
-        $this->argumentsTypes = $argumentsTypes;
-        $pieces = $this->splitCommand($command);
-        $commandPieces = $this->prepareCommandPiecesArray($pieces, $argumentsTypes);
-        $this->commandPieces = $commandPieces;
+        $this->prepareCommandValues($schema, $command);
     }
 
-    private function prepareArgumentsTypesArray($schema)
+    private function prepareCommandValues($schema, $command)
+    {
+        $argumentsTypes = $this->prepareArgumentsWithTheirTypesArray($schema);
+        $this->prepareCommandPiecesArray($command, $argumentsTypes);
+    }
+
+    private function prepareArgumentsWithTheirTypesArray($schema)
     {
         $splittedSchemaArray = $this->splitSchema($schema);
         $argumentsWithTypes = $this->convertToTypes($splittedSchemaArray);
+        $this->argumentsTypes = $argumentsWithTypes;
 
         return $argumentsWithTypes;
     }
@@ -70,15 +73,10 @@ class Args
         return $arr;
     }
 
-    private function splitCommand($command)
+    private function prepareCommandPiecesArray($command, $argumentsTypes)
     {
-        $pieces = explode(" ", $command);
+        $pieces = $this->splitCommand($command);
 
-        return $pieces;
-    }
-
-    private function prepareCommandPiecesArray($pieces, $argumentsTypes)
-    {
         $commandPieces = [];
         $actualParameter = null;
 
@@ -93,8 +91,16 @@ class Args
                 $actualParameter = null;
             }
         }
+        $this->commandPieces = $commandPieces;
 
         return $commandPieces;
+    }
+
+    private function splitCommand($command)
+    {
+        $pieces = explode(" ", $command);
+
+        return $pieces;
     }
 
     private function isCommandArgument($firstLetter, $secondLetter): bool
@@ -166,4 +172,5 @@ class Args
 
         return false;
     }
+
 }
