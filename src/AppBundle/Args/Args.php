@@ -33,6 +33,43 @@ class Args
         $this->commandPieces = $commandPieces;
     }
 
+    private function prepareArgumentsTypesArray($schema)
+    {
+        $splittedSchemaArray = $this->splitSchema($schema);
+        $argumentsWithTypes = $this->convertToTypes($splittedSchemaArray);
+
+        return $argumentsWithTypes;
+    }
+
+    private function splitSchema($schema): array
+    {
+        $splittedArray = explode(',', $schema);
+        $arr = [];
+        foreach ($splittedArray as $item) {
+            $arr[substr($item, 0, 1)] = substr($item, 1, 1);
+        }
+
+        return $arr;
+    }
+
+    private function convertToTypes($arr)
+    {
+        foreach ($arr as $argument => $typeChar) {
+            switch ($typeChar) {
+                case "":
+                    $arr[$argument] = "bool";
+                    break;
+                case "#":
+                    $arr[$argument] = "intiger";
+                    break;
+                case "*":
+                    $arr[$argument] = "string";
+                    break;
+            }
+        }
+        return $arr;
+    }
+
     private function splitCommand($command)
     {
         $pieces = explode(" ", $command);
@@ -58,6 +95,21 @@ class Args
         }
 
         return $commandPieces;
+    }
+
+    private function isCommandArgument($firstLetter, $secondLetter): bool
+    {
+        return $this->isDash($firstLetter) and $this->isLetter($secondLetter);
+    }
+
+    private function isDash($firstLetter): bool
+    {
+        return $firstLetter == "-";
+    }
+
+    private function isLetter($letter): int
+    {
+        return preg_match('/[a-zA-Z]/', $letter);
     }
 
     private function convertStringIntoType($stringParameter, $type)
@@ -96,56 +148,14 @@ class Args
         return (int)trim($stringParameter);
     }
 
-    private function isCommandArgument($firstLetter, $secondLetter): bool
+    private function isTypeCompatibile($letter, string $type): bool
     {
-        return $this->isDash($firstLetter) and $this->isLetter($secondLetter);
+        return ($this->argumentsTypes[$letter] == $type);
     }
 
-    private function isLetter($letter): int
+    private function isLetterExists($letter): bool
     {
-        return preg_match('/[a-zA-Z]/', $letter);
-    }
-
-    private function isDash($firstLetter): bool
-    {
-        return $firstLetter == "-";
-    }
-
-    private function prepareArgumentsTypesArray($schema)
-    {
-        $splittedSchemaArray = $this->splitSchema($schema);
-        $argumentsWithTypes = $this->convertToTypes($splittedSchemaArray);
-
-        return $argumentsWithTypes;
-    }
-
-    private function splitSchema($schema): array
-    {
-        $splittedArray = explode(',', $schema);
-        $arr = [];
-        foreach ($splittedArray as $item) {
-            $arr[substr($item, 0, 1)] = substr($item, 1, 1);
-        }
-
-        return $arr;
-    }
-
-    private function convertToTypes($arr)
-    {
-        foreach ($arr as $argument => $typeChar) {
-            switch ($typeChar) {
-                case "":
-                    $arr[$argument] = "bool";
-                    break;
-                case "#":
-                    $arr[$argument] = "intiger";
-                    break;
-                case "*":
-                    $arr[$argument] = "string";
-                    break;
-            }
-        }
-        return $arr;
+        return (array_key_exists($letter, $this->commandPieces));
     }
 
     public function getValueByLetter($letter, string $type)
@@ -155,15 +165,5 @@ class Args
         }
 
         return false;
-    }
-
-    private function isTypeCompatibile($letter, string $type): bool
-    {
-        return ($this->argumentsTypes[$letter] == $type);
-    }
-
-    private function isLetterExists($letter): bool
-    {
-        return (array_key_exists($letter, $this->commandPieces));
     }
 }
