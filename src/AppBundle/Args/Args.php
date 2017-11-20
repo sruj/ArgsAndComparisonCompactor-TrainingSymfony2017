@@ -2,10 +2,13 @@
 
 namespace AppBundle\Args;
 
+use AppBundle\Args\BoolArgsType;
+use AppBundle\Args\IntegerArgsType;
+use AppBundle\Args\StringArgsType;
+
 class Args
 {
-    private $commandPieces;
-    private $argumentsTypes;
+    private $arguments;
 
     /**
      * Zadania tej klasy:
@@ -31,17 +34,14 @@ class Args
 
     private function prepareCommandValues($schema, $command)
     {
-        $argumentsTypes = $this->prepareArgumentsWithTheirTypesArray($schema);
-        $this->prepareCommandPiecesArray($command, $argumentsTypes);
+        $this->prepareArgumentsWithTheirTypesArray($schema);
+        $this->prepareCommandPiecesArray($command);
     }
 
     private function prepareArgumentsWithTheirTypesArray($schema)
     {
         $splittedSchemaArray = $this->splitSchema($schema);
-        $argumentsWithTypes = $this->convertToTypes($splittedSchemaArray);
-        $this->argumentsTypes = $argumentsWithTypes;
-
-        return $argumentsWithTypes;
+        $this->convertToTypes($splittedSchemaArray);
     }
 
     private function splitSchema($schema): array
@@ -60,40 +60,34 @@ class Args
         foreach ($arr as $argument => $typeChar) {
             switch ($typeChar) {
                 case "":
-                    $arr[$argument] = "bool";
+                    $this->arguments[$argument] = new BoolArgsType();
                     break;
                 case "#":
-                    $arr[$argument] = "intiger";
+                    $this->arguments[$argument] = new IntegerArgsType();
                     break;
                 case "*":
-                    $arr[$argument] = "string";
+                    $this->arguments[$argument] = new StringArgsType();
                     break;
             }
         }
-        return $arr;
     }
 
-    private function prepareCommandPiecesArray($command, $argumentsTypes)
+    private function prepareCommandPiecesArray($command)
     {
         $pieces = $this->splitCommand($command);
 
-        $commandPieces = [];
         $actualParameter = null;
 
         foreach ($pieces as $item) {
             $firstLetter = substr($item, 0, 1);
             $secondLetter = substr($item, 1);
             if ($this->isCommandArgument($firstLetter, $secondLetter)) {
-                $commandPieces[$secondLetter] = null;
                 $actualParameter = $secondLetter;
-            } else {
-                $commandPieces[$actualParameter] = $this->convertStringIntoType($item, $argumentsTypes[$actualParameter]);
+            } else { //command parameter value
+                $this->convertStringIntoType($item, $this->arguments[$actualParameter]);
                 $actualParameter = null;
             }
         }
-        $this->commandPieces = $commandPieces;
-
-        return $commandPieces;
     }
 
     private function splitCommand($command)
@@ -118,59 +112,30 @@ class Args
         return preg_match('/[a-zA-Z]/', $letter);
     }
 
-    private function convertStringIntoType($stringParameter, $type)
+    private function convertStringIntoType($stringParameter, ArgsTypeInterface $argsType)
     {
-        $convertedValue = null;
-
-        switch ($type) {
-            case "bool":
-                $convertedValue = $this->convertBool($stringParameter);
-                break;
-            case "string":
-                $convertedValue = $this->convertString($stringParameter);
-                break;
-            case "intiger":
-                $convertedValue = $this->convertIntiger($stringParameter);
-                break;
-        }
-        return $convertedValue;
-    }
-
-    private function convertBool($stringParameter)
-    {
-        if ("true" == trim(strtolower($stringParameter))) {
-            return true;
-        }
-        return false;
-    }
-
-    private function convertString($stringParameter)
-    {
-        return $stringParameter;
-    }
-
-    private function convertIntiger($stringParameter)
-    {
-        return (int)trim($stringParameter);
-    }
-
-    private function isTypeCompatibile($letter, string $type): bool
-    {
-        return ($this->argumentsTypes[$letter] == $type);
+        $argsType->setParameter($stringParameter);
     }
 
     private function isLetterExists($letter): bool
     {
-        return (array_key_exists($letter, $this->commandPieces));
+        return (array_key_exists($letter, $this->arguments));
     }
 
     public function getValueByLetter($letter, string $type)
     {
-        if ($this->isLetterExists($letter) and $this->isTypeCompatibile($letter, $type)) {
-            return $this->commandPieces[$letter];
+        $argsType = $this->arguments[$letter];
+
+        if ($this->isLetterExists($letter)) {
+            return $this->getParameter($argsType);
         }
 
         return false;
+    }
+
+    private function getParameter(ArgsTypeInterface $argsType)
+    {
+        return $argsType->getParameter();
     }
 
 }
