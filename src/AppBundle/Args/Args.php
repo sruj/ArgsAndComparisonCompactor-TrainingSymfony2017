@@ -118,7 +118,12 @@ class Args
         return (array_key_exists($letter, $this->arguments));
     }
 
-    public function getValueByLetter($letter, string $type)
+    private function getParameter(ArgsTypeInterface $argsType)
+    {
+        return $argsType->getParameter();
+    }
+
+    public function getValueByLetter($letter)
     {
         $argsType = $this->arguments[$letter];
 
@@ -129,9 +134,10 @@ class Args
         return false;
     }
 
-    private function getParameter(ArgsTypeInterface $argsType)
+    public function getArguments()
     {
-        return $argsType->getParameter();
+        return $this->arguments;
     }
+
 
 }

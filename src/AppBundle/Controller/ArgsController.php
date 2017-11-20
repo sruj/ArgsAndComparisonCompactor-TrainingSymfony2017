@@ -22,13 +22,24 @@ class ArgsController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $command = $form->getData();
-            $commandInput = $command->getCommandInput();
+            $commandData = $form->getData();
+            $command = $commandData->getCommand();
+            $schema = $commandData->getSchema();
+
+            $args = new Args($schema, $command);
+            $arguments = $args->getArguments();
+            $array=[];
+            foreach ($arguments as $letter => $object) {
+                $array[$letter] = $args->getValueByLetter($letter);
+            }
+
+            return $this->render('args/results.html.twig', [
+                'lettersWithValues' => $array,
+                'command' => $command,
+                'schema' => $schema,
+            ]);
         }
 
-        $schema = "l,p#,d*";
-        $command = '-l true -p 234 -d Ala';
-        $args = new Args($schema, $command);
 
         return $this->render('args/index.html.twig', [
             'inputPattern' => $inputPattern,
@@ -36,5 +47,6 @@ class ArgsController extends Controller
             'commandInput' => $commandInput,
         ]);
     }
+
 }
 

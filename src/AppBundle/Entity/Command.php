@@ -25,9 +25,33 @@ class Command
     /**
      * @var string
      *
-     * @ORM\Column(name="commandInput", type="string", length=255)
+     * @ORM\Column(name="command", type="string", length=255)
      */
-    private $commandInput;
+    private $command;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="schema", type="string", length=255)
+     */
+    private $schema;
+
+    /**
+     * @return string
+     */
+    public function getSchema()
+    {
+        return $this->schema;
+    }
+
+    /**
+     * @param string $schema
+     */
+    public function setSchema(string $schema)
+    {
+        $this->schema = $schema;
+    }
 
 
     /**
@@ -41,27 +65,27 @@ class Command
     }
 
     /**
-     * Set commandInput
+     * Set command
      *
-     * @param string $commandInput
+     * @param string $command
      *
      * @return Command
      */
-    public function setCommandInput($commandInput)
+    public function setCommand($command)
     {
-        $this->commandInput = $commandInput;
+        $this->command = $command;
 
         return $this;
     }
 
     /**
-     * Get commandInput
+     * Get command
      *
      * @return string
      */
-    public function getCommandInput()
+    public function getCommand()
     {
-        return $this->commandInput;
+        return $this->command;
     }
 }
 

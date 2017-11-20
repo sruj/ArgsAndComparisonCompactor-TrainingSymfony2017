@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h2>Command:</h2>
+    {{ command }}
+    <h2>Schema:</h2>
+    {{ schema }}
+
+    <h2>After parse:</h2>
+    {% for item,key in lettersWithValues %}
+        <ul>
+            <li>litera: {{ item }}</li>
+            <li>wartość: {{ key }}</li>
+        </ul>
+
+    {% endfor %}
+
+{% endblock %}
