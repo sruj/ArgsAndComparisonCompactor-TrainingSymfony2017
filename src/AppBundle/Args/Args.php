@@ -2,10 +2,6 @@
 
 namespace AppBundle\Args;
 
-use AppBundle\Args\BoolArgsType;
-use AppBundle\Args\IntegerArgsType;
-use AppBundle\Args\StringArgsType;
-
 class Args
 {
     private $arguments;
