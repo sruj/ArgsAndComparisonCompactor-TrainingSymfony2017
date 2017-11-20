@@ -40,7 +40,6 @@ class ArgsController extends Controller
             ]);
         }
 
-
         return $this->render('args/index.html.twig', [
             'inputPattern' => $inputPattern,
             'form' => $form->createView(),
