@@ -26,4 +26,4 @@ Module writen in Symfony Framework based on "Clean Code. Robert C. Martin" exerc
 
  Given two strings that differ,
 such as ABCDE and ABXDE, it will expose the difference by generating a string such as
-<...B[X]D...>.c 
+<...B[X]D...>.      
