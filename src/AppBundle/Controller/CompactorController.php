@@ -24,9 +24,7 @@ class CompactorController extends Controller
             $contextLength = $compactorData->getCotext();
             $expected = $compactorData->getExpected();
             $actual = $compactorData->getActual();
-//            $contextLength = 0;
-//            $expected = "abc";
-//            $actual = "adc";
+
             $cc = new ComparisonCompactor($contextLength, $expected, $actual);
             $result = $cc->compact();
 
