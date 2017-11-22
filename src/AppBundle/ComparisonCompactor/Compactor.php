@@ -40,6 +40,34 @@ class Compactor
         return $result;
     }
 
+    private function checkStringsValidity()
+    {
+        $sum = strlen($this->actStr) - strlen($this->expStr);
+        if ($sum > 1 || $sum < -1) {
+            throw new \Exception("Strings lenght error. Number of letters in compared string must be equal or not bigger than 1 letter.");
+        }
+        if ($this->actStr == null || $this->expStr == null) {
+            throw new \Exception("One of strings are empty");
+        }
+        if (!$this->doesStringsHaveEqualLength()) {
+            throw new \Exception("I can only compare srings with same length.");
+        }
+    }
+
+    private function areStringsSame()
+    {
+        if ($this->expStr === $this->actStr) {
+            return true;
+        }
+        return false;
+    }
+
+    private function prepareResultForLackOfErrorLetter(): string
+    {
+        return Compactor::$openBracket . $this->expStr . Compactor::$closedBracket .
+            Compactor::$openBracket . $this->actStr . Compactor::$closedBracket;
+    }
+
     private function compareStrings()
     {
         $exAr = $this->splitStrToArray($this->expStr);
@@ -64,46 +92,14 @@ class Compactor
         return $strErr;
     }
 
-    private function areStringsSame()
+    private function splitStrToArray($str): array
     {
-        if ($this->expStr === $this->actStr) {
-            return true;
-        }
-        return false;
+        return str_split($str);
     }
 
-    private function checkStringsValidity()
+    private function surroundErrorLetter($letter): string
     {
-        $sum = strlen($this->actStr) - strlen($this->expStr);
-        if ($sum > 1 || $sum < -1) {
-            throw new \Exception("Strings lenght error. Number of letters in compared string must be equal or not bigger than 1 letter.");
-        }
-        if ($this->actStr == null || $this->expStr == null) {
-            throw new \Exception("One of strings are empty");
-        }
-        if (!$this->doesStringsHaveEqualLength()) {
-            throw new \Exception("I can only compare srings with same length.");
-        }
-    }
-
-    private function doesStringsHaveEqualLength(): bool
-    {
-        return strlen($this->expStr) == strlen($this->actStr);
-    }
-
-    private function isFirstLetterInString($i): bool
-    {
-        return $i == 1;
-    }
-
-    private function isLetterOutOfContext($errPos, $currPos): bool
-    {
-        return $errPos - $currPos > $this->context;
-    }
-
-    private function isLastLetter($currPos, $strLnght): bool
-    {
-        return $currPos == $strLnght;
+        return Compactor::$leftBractet . $letter . Compactor::$rightBractet;
     }
 
     private function createResult($expStr, $errPos, $result, $errLetter): string
@@ -131,11 +127,6 @@ class Compactor
         return $result;
     }
 
-    private function isOutOfContext($currPos): bool
-    {
-        return $currPos > $this->context;
-    }
-
     private function findCommonPrefixLetters($errPos, $result, $currPos, $currChar): string
     {
         if ($this->isFirstLetterInString($currPos)) {
@@ -150,6 +141,27 @@ class Compactor
             }
         }
         return $result;
+    }
+
+    private function isFirstLetterInString($i): bool
+    {
+        return $i == 1;
+    }
+
+    private function isLetterOutOfContext($errPos, $currPos): bool
+    {
+        return $errPos - $currPos > $this->context;
+    }
+
+    private function insertErrorLetter($result, $errLetter): string
+    {
+        $result .= $errLetter;
+        return $result;
+    }
+
+    private function doesStringsHaveEqualLength(): bool
+    {
+        return strlen($this->expStr) == strlen($this->actStr);
     }
 
     private function findCommonSufixLetters($result, $currPos, $strLnght, $currChar): string
@@ -168,25 +180,13 @@ class Compactor
         return $result;
     }
 
-    private function insertErrorLetter($result, $errLetter): string
+    private function isLastLetter($currPos, $strLnght): bool
     {
-        $result .= $errLetter;
-        return $result;
+        return $currPos == $strLnght;
     }
 
-    private function surroundErrorLetter($letter): string
+    private function isOutOfContext($currPos): bool
     {
-        return Compactor::$leftBractet . $letter . Compactor::$rightBractet;
-    }
-
-    private function prepareResultForLackOfErrorLetter(): string
-    {
-        return Compactor::$openBracket . $this->expStr . Compactor::$closedBracket .
-            Compactor::$openBracket . $this->actStr . Compactor::$closedBracket;
-    }
-
-    private function splitStrToArray($str): array
-    {
-        return str_split($str);
+        return $currPos > $this->context;
     }
 }
