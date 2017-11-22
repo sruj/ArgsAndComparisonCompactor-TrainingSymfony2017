@@ -2,11 +2,10 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Compactor;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use AppBundle\ComparisonCompactor\ComparisonCompactor;
+use AppBundle\ComparisonCompactor\Compactor;
 use AppBundle\Form\CompactorType;
 
 class CompactorController extends Controller
@@ -25,7 +24,7 @@ class CompactorController extends Controller
             $expected = $compactorData->getExpected();
             $actual = $compactorData->getActual();
 
-            $cc = new ComparisonCompactor($contextLength, $expected, $actual);
+            $cc = new Compactor($contextLength, $expected, $actual);
             $result = $cc->compact();
 
             return $this->render('compactor/results.html.twig', [
